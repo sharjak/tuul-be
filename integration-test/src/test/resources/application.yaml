@@ -8,5 +8,5 @@ firebase:
   emulator-port: 8081
 
 jwt:
-  secret: S+QXTyzSAuY+rmTl05TCewS5F9UngYoYFvZ3UrR76yFZ+HXsuN1QJmaIDOw/Nx/yTWUuLOiy/yV/FQhsVLK36A==
-  expiration: 3600000
+  secret: g1e6673Mb8lt6lhUjcP2xaE+06h385soizLz/gDMM1B2Ob/FmVIgWOqkG8XKwlpj8ntsMXczslbxyDjnNcEINA==
+  expiration: 7200000

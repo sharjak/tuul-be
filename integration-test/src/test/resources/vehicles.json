@@ -1,0 +1,47 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "vehicleCode": "code1",
+    "stateOfCharge": 85,
+    "coordinates": {
+      "latitude": 59.4370,
+      "longitude": 24.7535
+    }
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "vehicleCode": "code2",
+    "stateOfCharge": 60,
+    "coordinates": {
+      "latitude": 59.4382,
+      "longitude": 24.7450
+    }
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440002",
+    "vehicleCode": "code3",
+    "stateOfCharge": 40,
+    "coordinates": {
+      "latitude": 59.4321,
+      "longitude": 24.7580
+    }
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440003",
+    "vehicleCode": "code4",
+    "stateOfCharge": 95,
+    "coordinates": {
+      "latitude": 59.4361,
+      "longitude": 24.7605
+    }
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440004",
+    "vehicleCode": "code5",
+    "stateOfCharge": 72,
+    "coordinates": {
+      "latitude": 59.4390,
+      "longitude": 24.7520
+    }
+  }
+]

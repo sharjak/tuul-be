@@ -2,21 +2,19 @@ package com.tuul.test.auth.service;
 
 import com.tuul.test.auth.model.Token;
 import com.tuul.test.user.model.User;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
@@ -35,48 +33,48 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public Token generateJwtToken(User user) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime expiryDate = now.plus(jwtExpirationMs, ChronoUnit.MILLIS);
+        Instant now = Instant.now(clock);
+        Instant expiryDate = now.plusMillis(jwtExpirationMs);
 
         String token = Jwts.builder()
                 .setSubject(user.getId())
-                .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
-                .setExpiration(Date.from(expiryDate.atZone(ZoneId.systemDefault()).toInstant()))
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expiryDate))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
 
         return Token.builder()
                 .token(token)
-                .expiryDate(expiryDate)
+                .expiryDate(LocalDateTime.ofInstant(expiryDate, ZoneId.systemDefault()))
                 .build();
     }
 
     @Override
     public boolean validateJwtToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
+            createJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException | ExpiredJwtException |
-                 UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public String getUserIdFromJwtToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
+        Claims claims = createJws(token).getBody();
         return claims.getSubject();
     }
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
+    private Jws<Claims> createJws(String token) {
+        var jwtToken = token.replace("Bearer ", "").trim();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .setClock(() -> Date.from(Instant.now(clock)))
+                .build()
+                .parseClaimsJws(jwtToken);
     }
 }

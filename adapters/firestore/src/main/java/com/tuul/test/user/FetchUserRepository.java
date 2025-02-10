@@ -4,13 +4,14 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.tuul.test.util.FirestoreUtils;
 import com.tuul.test.user.model.User;
 import com.tuul.test.user.port.FetchUserPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class FetchUserRepository implements FetchUserPort {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        try {
+        return FirestoreUtils.safeFirestoreQuery(() -> {
             ApiFuture<QuerySnapshot> future = firestore.collection(COLLECTION_NAME)
                     .whereEqualTo("email", email)
                     .limit(1)
@@ -35,25 +36,60 @@ public class FetchUserRepository implements FetchUserPort {
                 return Optional.of(user);
             }
 
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Failed to fetch user by email.", e);
-        }
-
-        return Optional.empty();
+            return Optional.empty();
+        }, "Failed to fetch user by email.");
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        try {
+        return FirestoreUtils.safeFirestoreQuery(() -> {
             QuerySnapshot querySnapshot = firestore.collection(COLLECTION_NAME)
                     .whereEqualTo("email", email)
                     .get()
                     .get();
 
             return !querySnapshot.isEmpty();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Failed to check if user exists by email", e);
-        }
+        }, "Failed to check if user exists by email");
+    }
+
+    @Override
+    public boolean existsActiveVehicleById(UUID userId) {
+        return FirestoreUtils.safeFirestoreQuery(() -> {
+            var querySnapshot = firestore.collection("users")
+                    .whereEqualTo("id", userId.toString())
+                    .whereNotEqualTo("activeVehicle", null)
+                    .limit(1)
+                    .get()
+                    .get();
+
+            return !querySnapshot.isEmpty();
+        }, "Error checking active vehicle by user ID");
+    }
+
+    @Override
+    public boolean existsActiveVehicleUnderAnyUsers(UUID vehicleId) {
+        return FirestoreUtils.safeFirestoreQuery(() -> {
+            var querySnapshot = firestore.collection("users")
+                    .whereEqualTo("activeVehicle", firestore.document("vehicles/" + vehicleId.toString()))
+                    .limit(1)
+                    .get()
+                    .get();
+
+            return !querySnapshot.isEmpty();
+        }, "Error checking active vehicle under any users");
+    }
+
+    @Override
+    public boolean existsActiveVehicleUnderUser(UUID userId, UUID vehicleId) {
+        return FirestoreUtils.safeFirestoreQuery(() -> {
+            var querySnapshot = firestore.collection("users")
+                    .whereEqualTo("id", userId.toString())
+                    .whereEqualTo("activeVehicle", firestore.document("vehicles/" + vehicleId.toString()))
+                    .limit(1)
+                    .get()
+                    .get();
+
+            return !querySnapshot.isEmpty();
+        }, "Error checking active vehicle under user");
     }
 }

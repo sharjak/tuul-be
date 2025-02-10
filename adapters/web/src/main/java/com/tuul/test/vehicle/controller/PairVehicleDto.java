@@ -1,4 +1,6 @@
 package com.tuul.test.vehicle.controller;
 
-record PairVehicleDto(String code) {
+import jakarta.validation.constraints.NotBlank;
+
+record PairVehicleDto(@NotBlank String code) {
 }

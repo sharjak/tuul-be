@@ -1,6 +1,7 @@
 package com.tuul.test.user.service;
 
 import com.tuul.test.UnitTest;
+import com.tuul.test.auth.model.Token;
 import com.tuul.test.auth.service.AuthService;
 import com.tuul.test.common.exception.BusinessViolationException;
 import com.tuul.test.user.model.User;
@@ -76,7 +77,7 @@ class UserServiceUnitTest extends UnitTest {
         @Test
         void given_valid_credentials_then_return_jwt_token() {
             var user = User.builder().id(UUID.randomUUID().toString()).email(EMAIL).password(new BCryptPasswordEncoder().encode(PASSWORD)).name(NAME).build();
-            var token = "dummy-jwt-token";
+            var token = Token.builder().token("dummy-jwt-token").build();
 
             when(fetchUserPort.findByEmail(EMAIL)).thenReturn(Optional.of(user));
             when(authService.generateJwtToken(user)).thenReturn(token);

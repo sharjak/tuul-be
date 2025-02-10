@@ -1,5 +1,6 @@
 package com.tuul.test.user.service;
 
+import com.tuul.test.auth.model.Token;
 import com.tuul.test.auth.service.AuthService;
 import com.tuul.test.common.exception.BusinessViolationException;
 import com.tuul.test.user.model.User;
@@ -18,6 +19,7 @@ public class UserServiceImpl implements UserService {
     private final AuthService authService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @Override
     public User registerUser(User user) {
         UserValidationUtil.validateForRegister(user);
         validateUserDoesNotExistByEmail(user);
@@ -25,7 +27,8 @@ public class UserServiceImpl implements UserService {
         return saveUserPort.registerUser(user);
     }
 
-    public String authenticateUser(String email, String password) {
+    @Override
+    public Token authenticateUser(String email, String password) {
         User user = fetchUserPort.findByEmail(email)
                 .orElseThrow(() -> new BusinessViolationException("User with email does not exist."));
         validateUserPasswordMatches(user.getPassword(), password);

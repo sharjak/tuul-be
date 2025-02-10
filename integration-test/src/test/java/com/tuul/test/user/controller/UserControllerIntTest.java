@@ -34,7 +34,7 @@ public class UserControllerIntTest extends IntegrationTest {
 
         @Test
         void given_valid_user_then_creates_and_returns_user_with_id() {
-            SaveUserDto request = new SaveUserDto("Jane Doe", "jane.doe@example.com", "password123");
+            var request = new SaveUserDto("Jane Doe", "jane.doe@example.com", "password123");
 
             ResponseEntity<UserDto> response = restTemplate.postForEntity("/user", request, UserDto.class);
 
@@ -47,7 +47,7 @@ public class UserControllerIntTest extends IntegrationTest {
 
         @Test
         void given_invalid_email_then_returns_bad_request() {
-            SaveUserDto request = new SaveUserDto(NAME, "invalid-email", PASSWORD);
+            var request = new SaveUserDto(NAME, "invalid-email", PASSWORD);
 
             ResponseEntity<String> response = restTemplate.postForEntity("/user", request, String.class);
 
@@ -56,7 +56,7 @@ public class UserControllerIntTest extends IntegrationTest {
 
         @Test
         void given_missing_password_then_returns_bad_request() {
-            SaveUserDto request = new SaveUserDto("Jane Doe", "jane.doe@example.com", null);
+            var request = new SaveUserDto("Jane Doe", "jane.doe@example.com", null);
 
             ResponseEntity<String> response = restTemplate.postForEntity("/user", request, String.class);
 
@@ -69,18 +69,18 @@ public class UserControllerIntTest extends IntegrationTest {
 
         @Test
         void given_valid_credentials_then_return_jwt_token() {
-            LoginUserDto request = new LoginUserDto(EMAIL, PASSWORD);
+            var request = new LoginUserDto(EMAIL, PASSWORD);
 
-            ResponseEntity<String> response = restTemplate.postForEntity("/user/login", request, String.class);
+            ResponseEntity<TokenDto> response = restTemplate.postForEntity("/user/login", request, TokenDto.class);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(response.getBody()).isNotNull();
-            assertThat(response.getBody()).startsWith("ey");
+            assertThat(response.getBody().token()).startsWith("ey");
         }
 
         @Test
         void given_invalid_password_then_return_bad_request() {
-            LoginUserDto request = new LoginUserDto(EMAIL, "wrongPassword");
+            var request = new LoginUserDto(EMAIL, "wrongPassword");
 
             ResponseEntity<String> response = restTemplate.postForEntity("/user/login", request, String.class);
 
@@ -89,7 +89,7 @@ public class UserControllerIntTest extends IntegrationTest {
 
         @Test
         void given_non_existent_email_then_return_bad_request() {
-            LoginUserDto request = new LoginUserDto("nonexistent@example.com", PASSWORD);
+            var request = new LoginUserDto("nonexistent@example.com", PASSWORD);
 
             ResponseEntity<String> response = restTemplate.postForEntity("/user/login", request, String.class);
 

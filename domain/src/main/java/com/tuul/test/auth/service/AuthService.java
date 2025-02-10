@@ -1,10 +1,11 @@
 package com.tuul.test.auth.service;
 
+import com.tuul.test.auth.model.Token;
 import com.tuul.test.user.model.User;
 
 public interface AuthService {
 
-    String generateJwtToken(User user);
+    Token generateJwtToken(User user);
 
     boolean validateJwtToken(String token);
 

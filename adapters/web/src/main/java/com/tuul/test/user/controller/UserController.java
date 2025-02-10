@@ -31,8 +31,9 @@ class UserController {
 
     @Operation(summary = "User Login", description = "Authenticates a user and returns a JWT token.")
     @PostMapping("/login")
-    ResponseEntity<String> loginUser(@RequestBody @Valid LoginUserDto loginUserDto) {
-        String token = userService.authenticateUser(loginUserDto.email(), loginUserDto.password());
-        return ResponseEntity.ok(token);
+    ResponseEntity<TokenDto> loginUser(@RequestBody @Valid LoginUserDto loginUserDto) {
+        var token = userService.authenticateUser(loginUserDto.email(), loginUserDto.password());
+        var dto = userDtoMapper.toDto(token);
+        return ResponseEntity.ok(dto);
     }
 }

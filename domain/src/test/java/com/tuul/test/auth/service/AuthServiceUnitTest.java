@@ -25,12 +25,12 @@ class AuthServiceUnitTest extends UnitTest {
 
         @Test
         void given_valid_user_then_return_jwt_token() {
-            User user = User.builder()
+            var user = User.builder()
                     .id(UUID.randomUUID().toString())
                     .email("test@example.com")
                     .build();
 
-            String token = authService.generateJwtToken(user);
+            var token = authService.generateJwtToken(user);
 
             assertThat(token).isNotNull();
         }
@@ -41,21 +41,21 @@ class AuthServiceUnitTest extends UnitTest {
 
         @Test
         void given_valid_token_then_return_true() {
-            User user = User.builder().id(UUID.randomUUID().toString()).email("test@example.com").build();
-            String token = authService.generateJwtToken(user);
+            var user = User.builder().id(UUID.randomUUID().toString()).email("test@example.com").build();
+            var token = authService.generateJwtToken(user);
 
-            boolean isValid = authService.validateJwtToken(token);
+            var isValid = authService.validateJwtToken(token.getToken());
 
             assertThat(isValid).isTrue();
         }
 
         @Test
         void given_expired_token_then_return_false() {
-            AuthServiceImpl expiredAuthService = new AuthServiceImpl(fixedClock, SECRET_KEY, -1000L);
-            User user = User.builder().id(UUID.randomUUID().toString()).email("test@example.com").build();
-            String expiredToken = expiredAuthService.generateJwtToken(user);
+            var expiredAuthService = new AuthServiceImpl(fixedClock, SECRET_KEY, -1000L);
+            var user = User.builder().id(UUID.randomUUID().toString()).email("test@example.com").build();
+            var expiredToken = expiredAuthService.generateJwtToken(user);
 
-            boolean isValid = expiredAuthService.validateJwtToken(expiredToken);
+            var isValid = expiredAuthService.validateJwtToken(expiredToken.getToken());
 
             assertThat(isValid).isFalse();
         }
@@ -66,11 +66,11 @@ class AuthServiceUnitTest extends UnitTest {
 
         @Test
         void given_valid_token_then_return_user_id() {
-            String userId = UUID.randomUUID().toString();
-            User user = User.builder().id(userId).email("test@example.com").build();
-            String token = authService.generateJwtToken(user);
+            var userId = UUID.randomUUID().toString();
+            var user = User.builder().id(userId).email("test@example.com").build();
+            var token = authService.generateJwtToken(user);
 
-            String extractedUserId = authService.getUserIdFromJwtToken(token);
+            String extractedUserId = authService.getUserIdFromJwtToken(token.getToken());
 
             assertThat(extractedUserId).isEqualTo(userId);
         }

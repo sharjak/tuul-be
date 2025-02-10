@@ -1,11 +1,12 @@
 package com.tuul.test.user.service;
 
+import com.tuul.test.auth.model.Token;
 import com.tuul.test.user.model.User;
 
 public interface UserService {
 
     User registerUser(User user);
 
-    String authenticateUser(String email, String password);
+    Token authenticateUser(String email, String password);
 
 }

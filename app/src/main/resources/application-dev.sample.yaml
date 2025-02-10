@@ -5,3 +5,6 @@ firebase:
 jwt:
   secret: super-secret-secret-key
   expiration: 3600000
+
+cors:
+  allowed-origins: "http://localhost:5173"

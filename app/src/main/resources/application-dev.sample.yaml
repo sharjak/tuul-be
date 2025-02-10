@@ -1,0 +1,7 @@
+firebase:
+  project-id: your-firebase-project-id
+  config-path: /path/to/your-service-account.json
+
+jwt:
+  secret: super-secret-secret-key
+  expiration: 3600000

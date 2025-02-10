@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: integration-test
+
+firebase:
+  project-id: test-project
+  emulator-host: localhost
+  emulator-port: 8081
+
+jwt:
+  secret: S+QXTyzSAuY+rmTl05TCewS5F9UngYoYFvZ3UrR76yFZ+HXsuN1QJmaIDOw/Nx/yTWUuLOiy/yV/FQhsVLK36A==
+  expiration: 3600000

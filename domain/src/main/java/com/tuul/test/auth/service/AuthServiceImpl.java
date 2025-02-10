@@ -37,7 +37,7 @@ class AuthServiceImpl implements AuthService {
         Instant expiryDate = now.plusMillis(jwtExpirationMs);
 
         String token = Jwts.builder()
-                .setSubject(user.getId())
+                .setSubject(user.getId().toString())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiryDate))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)

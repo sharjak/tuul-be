@@ -1,6 +1,7 @@
 package com.tuul.test.user;
 
 import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -31,13 +32,46 @@ public class FetchUserRepository implements FetchUserPort {
 
             if (!querySnapshot.isEmpty()) {
                 QueryDocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                User user = document.toObject(User.class);
-                user.setId(document.getId());
+                User user = User.builder()
+                        .id(UUID.fromString(document.getId()))
+                        .email(document.getString("email"))
+                        .password(document.getString("password"))
+                        .name(document.getString("name"))
+                        .build();
                 return Optional.of(user);
             }
 
             return Optional.empty();
         }, "Failed to fetch user by email.");
+    }
+
+    @Override
+    public Optional<User> fetch(UUID id) {
+        return FirestoreUtils.safeFirestoreQuery(() -> {
+            var documentSnapshot = firestore.collection(COLLECTION_NAME)
+                    .document(id.toString())
+                    .get()
+                    .get();
+
+            if (documentSnapshot.exists()) {
+                User user = User.builder()
+                        .id(UUID.fromString(documentSnapshot.getId()))
+                        .email(documentSnapshot.getString("email"))
+                        .password(documentSnapshot.getString("password"))
+                        .name(documentSnapshot.getString("name"))
+                        .build();
+
+                DocumentReference activeVehicleRef = documentSnapshot.get("activeVehicle", DocumentReference.class);
+                if (activeVehicleRef != null) {
+                    String activeVehicleId = activeVehicleRef.getId();
+                    user.setActiveVehicleId(UUID.fromString(activeVehicleId));
+                }
+
+                return Optional.of(user);
+            }
+
+            return Optional.empty();
+        }, "Failed to fetch user from Firestore");
     }
 
     @Override

@@ -26,7 +26,7 @@ class AuthServiceUnitTest extends UnitTest {
         @Test
         void given_valid_user_then_return_jwt_token() {
             var user = User.builder()
-                    .id(UUID.randomUUID().toString())
+                    .id(UUID.randomUUID())
                     .email("test@example.com")
                     .build();
 
@@ -41,7 +41,7 @@ class AuthServiceUnitTest extends UnitTest {
 
         @Test
         void given_valid_token_then_return_true() {
-            var user = User.builder().id(UUID.randomUUID().toString()).email("test@example.com").build();
+            var user = User.builder().id(UUID.randomUUID()).email("test@example.com").build();
             var token = authService.generateJwtToken(user);
 
             var isValid = authService.validateJwtToken(token.getToken());
@@ -52,7 +52,7 @@ class AuthServiceUnitTest extends UnitTest {
         @Test
         void given_expired_token_then_return_false() {
             var expiredAuthService = new AuthServiceImpl(fixedClock, SECRET_KEY, -1000L);
-            var user = User.builder().id(UUID.randomUUID().toString()).email("test@example.com").build();
+            var user = User.builder().id(UUID.randomUUID()).email("test@example.com").build();
             var expiredToken = expiredAuthService.generateJwtToken(user);
 
             var isValid = expiredAuthService.validateJwtToken(expiredToken.getToken());
@@ -66,13 +66,13 @@ class AuthServiceUnitTest extends UnitTest {
 
         @Test
         void given_valid_token_then_return_user_id() {
-            var userId = UUID.randomUUID().toString();
+            var userId = UUID.randomUUID();
             var user = User.builder().id(userId).email("test@example.com").build();
             var token = authService.generateJwtToken(user);
 
             String extractedUserId = authService.getUserIdFromJwtToken(token.getToken());
 
-            assertThat(extractedUserId).isEqualTo(userId);
+            assertThat(UUID.fromString(extractedUserId)).isEqualTo(userId);
         }
     }
 }

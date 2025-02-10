@@ -9,6 +9,8 @@ public interface FetchUserPort {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> fetch(UUID id);
+
     boolean existsByEmail(String email);
 
     boolean existsActiveVehicleById(UUID userId);

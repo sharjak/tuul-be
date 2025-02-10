@@ -2,6 +2,7 @@ package com.tuul.test.user.controller;
 
 import com.tuul.test.IntegrationTest;
 import com.tuul.test.user.service.UserService;
+import com.tuul.test.vehicle.service.VehicleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,9 @@ public class UserControllerIntTest extends IntegrationTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     private static final String NAME = "John Doe";
     private static final String EMAIL = "john.doe@example.com";
@@ -96,4 +100,65 @@ public class UserControllerIntTest extends IntegrationTest {
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Nested
+    class when_fetching_user_details {
+        private String token;
+
+        @BeforeEach
+        void authenticateUser() {
+            var loginRequest = new LoginUserDto(EMAIL, PASSWORD);
+            ResponseEntity<TokenDto> loginResponse = restTemplate.postForEntity("/user/login", loginRequest, TokenDto.class);
+            token = loginResponse.getBody().token();
+        }
+
+        @Test
+        void given_valid_token_with_active_vehicle_then_return_user_details() {
+            vehicleService.pair(token, "code1");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<UserDetailsDto> response = restTemplate.exchange("/user/details", HttpMethod.GET, entity, UserDetailsDto.class);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(response.getBody()).isNotNull();
+            assertThat(response.getBody().email()).isEqualTo(EMAIL);
+            assertThat(response.getBody().activeVehicle()).isNotNull();
+            assertThat(response.getBody().activeVehicle().code()).isEqualTo("code1");
+        }
+
+        @Test
+        void given_valid_token_without_active_vehicle_then_return_user_details_with_null_vehicle() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<UserDetailsDto> response = restTemplate.exchange("/user/details", HttpMethod.GET, entity, UserDetailsDto.class);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(response.getBody()).isNotNull();
+            assertThat(response.getBody().email()).isEqualTo(EMAIL);
+            assertThat(response.getBody().activeVehicle()).isNull();
+        }
+
+        @Test
+        void given_invalid_token_then_return_unauthorized() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth("invalid-token");
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange("/user/details", HttpMethod.GET, entity, String.class);
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        }
+
+        @Test
+        void given_missing_token_then_return_unauthorized() {
+            ResponseEntity<String> response = restTemplate.getForEntity("/user/details", String.class);
+
+            assertThat(response.getStatusCode()).isIn(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
 }

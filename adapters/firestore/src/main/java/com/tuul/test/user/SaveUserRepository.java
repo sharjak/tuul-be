@@ -1,7 +1,6 @@
 package com.tuul.test.user;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
@@ -13,6 +12,7 @@ import com.tuul.test.vehicle.model.ActiveVehicle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -25,12 +25,20 @@ public class SaveUserRepository implements SaveUserPort {
     @Override
     public User registerUser(User user) {
         return FirestoreUtils.safeFirestoreQuery(() -> {
-            String userId = UUID.randomUUID().toString();
+            var userId = UUID.randomUUID();
             user.setId(userId);
 
-            CollectionReference users = firestore.collection(COLLECTION_NAME);
-            ApiFuture<WriteResult> future = users.document(userId).set(user);
-            future.get();
+            Map<String, Object> userData = Map.of(
+                    "id", userId.toString(),
+                    "email", user.getEmail(),
+                    "password", user.getPassword(),
+                    "name", user.getName()
+            );
+
+            firestore.collection(COLLECTION_NAME)
+                    .document(userId.toString())
+                    .set(userData)
+                    .get();
 
             return user;
         }, "Failed to register user in Firestore");

@@ -7,8 +7,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +36,14 @@ class UserController {
     ResponseEntity<TokenDto> loginUser(@RequestBody @Valid LoginUserDto loginUserDto) {
         var token = userService.authenticateUser(loginUserDto.email(), loginUserDto.password());
         var dto = userDtoMapper.toDto(token);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(summary = "Fetch user details", description = "Fetches user details along with active vehicle data.")
+    @GetMapping("/details")
+    ResponseEntity<UserDetailsDto> fetchUserDetails(@RequestHeader("Authorization") String token) {
+        var userWithDetails = userService.fetchDetails(token);
+        var dto = userDtoMapper.toDto(userWithDetails);
         return ResponseEntity.ok(dto);
     }
 }

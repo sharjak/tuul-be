@@ -9,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserValidationUtilUnitTest extends UnitTest {
@@ -27,7 +29,7 @@ class UserValidationUtilUnitTest extends UnitTest {
 
         @Test
         void given_user_with_non_null_id_then_throw_exception() {
-            var user = User.builder().id("12345").name(NAME).email(EMAIL).password(PASSWORD).build();
+            var user = User.builder().id(UUID.randomUUID()).name(NAME).email(EMAIL).password(PASSWORD).build();
 
             assertThatThrownBy(() -> UserValidationUtil.validateForRegister(user))
                     .isInstanceOf(BusinessViolationException.class)

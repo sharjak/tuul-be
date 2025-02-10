@@ -66,7 +66,7 @@ public class VehicleControllerIntTest extends IntegrationTest {
 
             ResponseEntity<Void> response = restTemplate.postForEntity("/vehicle/pair", request, Void.class);
 
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
@@ -120,7 +120,7 @@ public class VehicleControllerIntTest extends IntegrationTest {
 
             ResponseEntity<Void> response = restTemplate.exchange("/vehicle/pair", HttpMethod.DELETE, request, Void.class);
 
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         }
 
         @Test

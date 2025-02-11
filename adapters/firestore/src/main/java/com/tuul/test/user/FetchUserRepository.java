@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class FetchUserRepository implements FetchUserPort {
+class FetchUserRepository implements FetchUserPort {
     private final Firestore firestore;
     private static final String COLLECTION_NAME = "users";
 

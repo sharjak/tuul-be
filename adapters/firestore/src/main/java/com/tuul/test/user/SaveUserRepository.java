@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class SaveUserRepository implements SaveUserPort {
+class SaveUserRepository implements SaveUserPort {
     private final Firestore firestore;
     private static final String COLLECTION_NAME = "users";
     private static final String VEHICLES_COLLECTION_NAME = "vehicles";

@@ -3,7 +3,7 @@ firebase:
   config-path: /path/to/your-service-account.json
 
 jwt:
-  secret: super-secret-secret-key
+  secret: super-secret-secret-key #Use for example openssl rand -base64 64 for generation
   expiration: 3600000
 
 cors:

@@ -1,5 +1,6 @@
 package com.tuul.test.vehicle.model;
 
+import com.tuul.test.common.model.Coordinates;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,7 @@ public class Vehicle {
     private UUID id;
     private String code;
     private double stateOfCharge;
-    private double latitude;
-    private double longitude;
+    private Coordinates coordinates;
     private boolean poweredOn;
     private double odometer;
     private double estimatedRange;

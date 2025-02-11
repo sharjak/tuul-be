@@ -39,4 +39,12 @@ public class VehicleController {
         vehicleService.unpair(token, pairVehicleDto.code());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/command")
+    public ResponseEntity<Void> sendVehicleCommand(
+            @RequestHeader("Authorization") String token,
+            @RequestBody VehicleCommandDto vehicleCommandDto) {
+        vehicleService.sendCommand(token, vehicleCommandDto.code(), vehicleCommandDto.command());
+        return ResponseEntity.ok().build();
+    }
 }
